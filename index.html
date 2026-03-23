@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>X Story Studio | Advanced Creator</title>
+    <style>
+        :root {
+            --bg-color: #000000;
+            --text-main: #e7e9ea;
+            --text-dim: #71767b;
+            --border-color: #2f3336;
+            --accent-color: #1d9bf0;
+            --input-bg: #16181c;
+        }
+
+        .light-mode {
+            --bg-color: #ffffff;
+            --text-main: #0f1419;
+            --text-dim: #536471;
+            --border-color: #eff3f4;
+            --accent-color: #1d9bf0;
+            --input-bg: #f7f9f9;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            background-color: #15202b;
+            color: var(--text-main);
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .app-container {
+            display: flex;
+            gap: 30px;
+            width: 100%;
+            max-width: 1100px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        /* Editor Styles */
+        .editor-panel {
+            background: #000;
+            border: 1px solid #333;
+            border-radius: 20px;
+            padding: 20px;
+            width: 400px;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+
+        .editor-panel h2 {
+            font-size: 1.2rem;
+            margin-bottom: 20px;
+            color: var(--accent-color);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .form-section {
+            margin-bottom: 20px;
+            border-bottom: 1px solid #222;
+            padding-bottom: 15px;
+        }
+
+        .form-group {
+            margin-bottom: 12px;
+        }
+
+        label {
+            display: block;
+            font-size: 12px;
+            color: #888;
+            margin-bottom: 5px;
+            text-transform: uppercase;
+            font-weight: bold;
+        }
+
+        input, textarea {
+            width: 100%;
+            padding: 10px;
+            background: #111;
+            border: 1px solid #333;
+            border-radius: 8px;
+            color: white;
+            font-size: 14px;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        .btn-row {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        button {
+            flex: 1;
+            padding: 12px;
+            border-radius: 25px;
+            border: none;
+            cursor: pointer;
+            font-weight: bold;
+            transition: 0.2s;
+        }
+
+        .btn-blue { background: #1d9bf0; color: white; }
+        .btn-white { background: white; color: black; }
+        .btn-outline { background: transparent; border: 1px solid #555; color: white; }
+
+        /* Preview Card Styles - Matches X.com exactly */
+        .preview-area {
+            position: sticky;
+            top: 20px;
+        }
+
+        .x-card {
+            background-color: var(--bg-color);
+            width: 500px;
+            padding: 12px 16px;
+            border: 1px solid var(--border-color);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .x-header {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 12px;
+        }
+
+        .x-pfp-container {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            margin-right: 12px;
+            overflow: hidden;
+            background: #333;
+            flex-shrink: 0;
+            position: relative;
+        }
+
+        .x-pfp-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            position: absolute;
+            transition: transform 0.1s;
+        }
+
+        .x-user-meta {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            height: 48px;
+        }
+
+        .x-name-line {
+            display: flex;
+            align-items: center;
+            gap: 2px;
+            font-weight: 700;
+            font-size: 15px;
+            color: var(--text-main);
+        }
+
+        .x-verified {
+            color: var(--accent-color);
+            width: 18px;
+            height: 18px;
+        }
+
+        .x-handle {
+            color: var(--text-dim);
+            font-size: 15px;
+        }
+
+        .x-content {
+            font-size: 17px;
+            line-height: 1.3;
+            color: var(--text-main);
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            margin-bottom: 12px;
+        }
+
+        .x-media-box {
+            margin-top: 12px;
+            border-radius: 16px;
+            border: 1px solid var(--border-color);
+            overflow: hidden;
+            display: none;
+        }
+
+        .x-media-box img {
+            width: 100%;
+            display: block;
+        }
+
+        .x-timestamp {
+            padding: 16px 0;
+            color: var(--text-dim);
+            font-size: 15px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .x-stats {
+            display: flex;
+            padding: 16px 0;
+            border-bottom: 1px solid var(--border-color);
+            gap: 20px;
+            font-size: 15px;
+            color: var(--text-dim);
+        }
+
+        .x-stat-val {
+            color: var(--text-main);
+            font-weight: 700;
+        }
+
+        .x-actions {
+            display: flex;
+            justify-content: space-around;
+            padding: 12px 0 4px 0;
+            color: var(--text-dim);
+        }
+
+        .x-icon {
+            font-size: 18px;
+        }
+
+        /* Utils */
+        .hidden { display: none; }
+        .export-mode .editor-panel { display: none; }
+        
+        @media (max-width: 950px) {
+            .app-container { flex-direction: column-reverse; align-items: center; }
+            .x-card { width: 95vw; }
+            .editor-panel { width: 95vw; max-height: none; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="app-container" id="main-app">
+    
+    <!-- Editor Panel -->
+    <div class="editor-panel">
+        <h2>🛠️ X Studio Pro</h2>
+        
+        <div class="form-section">
+            <label>Profile Config</label>
+            <div class="form-group">
+                <input type="file" id="pfp-upload" accept="image/*">
+                <p style="font-size: 10px; color: #666; margin-top:5px;">PFP Zoom: <input type="range" id="pfp-zoom" min="100" max="300" value="100"></p>
+            </div>
+            <div class="form-group">
+                <input type="text" id="name-in" placeholder="Display Name">
+            </div>
+            <div class="form-group">
+                <input type="text" id="handle-in" placeholder="@username">
+            </div>
+            <div class="form-group" style="display:flex; align-items:center; gap:10px;">
+                <input type="checkbox" id="verified-in" checked style="width:auto;"> <span style="font-size:12px;">Show Verified Badge</span>
+            </div>
+        </div>
+
+        <div class="form-section">
+            <label>Tweet Content</label>
+            <div class="form-group">
+                <textarea id="text-in" rows="4" placeholder="What's happening?"></textarea>
+            </div>
+            <div class="form-group">
+                <label>Add Media (Image/GIF)</label>
+                <input type="file" id="media-upload" accept="image/*">
+            </div>
+        </div>
+
+        <div class="form-section">
+            <label>Metrics & Metadata</label>
+            <div class="form-group">
+                <input type="text" id="time-in" placeholder="8:12 AM · Mar 16, 2026">
+            </div>
+            <div class="stats-grid">
+                <div class="form-group">
+                    <label>Views</label>
+                    <input type="text" id="views-in" placeholder="1.2M">
+                </div>
+                <div class="form-group">
+                    <label>Retweets</label>
+                    <input type="text" id="retweets-in" placeholder="456">
+                </div>
+                <div class="form-group">
+                    <label>Quotes</label>
+                    <input type="text" id="quotes-in" placeholder="12">
+                </div>
+                <div class="form-group">
+                    <label>Likes</label>
+                    <input type="text" id="likes-in" placeholder="8,902">
+                </div>
+                <div class="form-group">
+                    <label>Bookmarks</label>
+                    <input type="text" id="bookmarks-in" placeholder="122">
+                </div>
+            </div>
+        </div>
+
+        <div class="btn-row">
+            <button class="btn-outline" onclick="toggleTheme()">🌓 Theme</button>
+            <button class="btn-white" onclick="prepareCapture()">📸 Save Photo</button>
+        </div>
+        <p style="font-size: 11px; text-align: center; color: #555; margin-top: 15px;">
+            Tip: For the highest quality, click "Save Photo" then take a screenshot of the clean preview.
+        </p>
+    </div>
+
+    <!-- Preview Panel -->
+    <div class="preview-area" id="preview-area">
+        <div class="x-card" id="x-card">
+            <div class="x-header">
+                <div class="x-pfp-container">
+                    <img id="pfp-img" src="" class="hidden">
+                    <div id="pfp-placeholder" style="width:100%; height:100%; display:flex; align-items:center; justify-content:center; background:#444; font-size:20px;">👤</div>
+                </div>
+                <div class="x-user-meta">
+                    <div class="x-name-line">
+                        <span id="name-out">Shivaansh | Shiv Abhishek Shar...</span>
+                        <svg id="verified-icon" class="x-verified" viewBox="0 0 24 24" fill="currentColor"><path d="M22.25 12c0-1.43-.88-2.67-2.19-3.34.46-1.39.2-2.97-.81-4.08s-2.69-1.27-4.08-.81c-.66-1.31-1.91-2.19-3.34-2.19s-2.67.88-3.33 2.19c-1.4-.46-2.98-.2-4.08.81s-1.27 2.69-.81 4.08c-1.31.67-2.19 1.91-2.19 3.34s.88 2.67 2.19 3.34c-.46 1.39-.2 2.97.81 4.08s2.69 1.27 4.08.81c.66 1.31 1.91 2.19 3.34 2.19s2.67-.88 3.33-2.19c1.4.46 2.98.2 4.08-.81s1.27-2.69.81-4.08c1.31-.67 2.19-1.91 2.19-3.34zm-11.71 4.2L6.8 12.46l1.41-1.42 2.26 2.26 4.8-5.23 1.47 1.35-6.2 6.78z"></path></svg>
+                    </div>
+                    <span class="x-handle" id="handle-out">@Itsabhishex</span>
+                </div>
+            </div>
+
+            <div class="x-content" id="text-out">"If you're a friend of everybody, you're an enemy to yourself"
+~ Mike Tyson
+
+Explanation :- please everyone often forces you to compromise your own values, mask your true personality, and abandon your authenticity.</div>
+
+            <div class="x-media-box" id="media-box">
+                <img id="media-img" src="">
+            </div>
+
+            <div class="x-timestamp">
+                <span id="time-out">8:12 am · 16 Mar 26</span> · <span style="color:var(--text-main); font-weight:700;" id="views-out">1.2M</span> <span style="font-size:14px">Views</span>
+            </div>
+
+            <div class="x-stats">
+                <div><span class="x-stat-val" id="retweets-out">456</span> Retweets</div>
+                <div><span class="x-stat-val" id="quotes-out">12</span> Quotes</div>
+                <div><span class="x-stat-val" id="likes-out">8,902</span> Likes</div>
+                <div><span class="x-stat-val" id="bookmarks-out">122</span> Bookmarks</div>
+            </div>
+
+            <div class="x-actions">
+                <span class="x-icon">💬</span>
+                <span class="x-icon">🔁</span>
+                <span class="x-icon">❤️</span>
+                <span class="x-icon">🔖</span>
+                <span class="x-icon">📤</span>
+            </div>
+        </div>
+
+        <button id="exit-capture" class="btn-white hidden" style="margin-top: 20px;" onclick="exitCapture()">⬅️ Back to Editor</button>
+    </div>
+</div>
+
+<script>
+    const inputs = {
+        name: document.getElementById('name-in'),
+        handle: document.getElementById('handle-in'),
+        text: document.getElementById('text-in'),
+        time: document.getElementById('time-in'),
+        views: document.getElementById('views-in'),
+        retweets: document.getElementById('retweets-in'),
+        quotes: document.getElementById('quotes-in'),
+        likes: document.getElementById('likes-in'),
+        bookmarks: document.getElementById('bookmarks-in'),
+        verified: document.getElementById('verified-in'),
+        pfpZoom: document.getElementById('pfp-zoom')
+    };
+
+    const outputs = {
+        name: document.getElementById('name-out'),
+        handle: document.getElementById('handle-out'),
+        text: document.getElementById('text-out'),
+        time: document.getElementById('time-out'),
+        views: document.getElementById('views-out'),
+        retweets: document.getElementById('retweets-out'),
+        quotes: document.getElementById('quotes-out'),
+        likes: document.getElementById('likes-out'),
+        bookmarks: document.getElementById('bookmarks-out'),
+        verified: document.getElementById('verified-icon'),
+        pfp: document.getElementById('pfp-img')
+    };
+
+    // Live sync inputs to outputs
+    Object.keys(inputs).forEach(key => {
+        if (key === 'verified') {
+            inputs[key].addEventListener('change', () => {
+                outputs.verified.style.display = inputs[key].checked ? 'inline-block' : 'none';
+            });
+        } else if (key === 'pfpZoom') {
+            inputs[key].addEventListener('input', () => {
+                outputs.pfp.style.transform = `scale(${inputs[key].value / 100})`;
+            });
+        } else {
+            inputs[key].addEventListener('input', () => {
+                let val = inputs[key].value;
+                if (key === 'handle' && val && !val.startsWith('@')) val = '@' + val;
+                outputs[key].textContent = val || "Default " + key;
+            });
+        }
+    });
+
+    // Handle File Uploads
+    document.getElementById('pfp-upload').addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(event) {
+                outputs.pfp.src = event.target.result;
+                outputs.pfp.classList.remove('hidden');
+                document.getElementById('pfp-placeholder').classList.add('hidden');
+            };
+            reader.readAsDataURL(file);
+        }
+    });
+
+    document.getElementById('media-upload').addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        const mediaBox = document.getElementById('media-box');
+        const mediaImg = document.getElementById('media-img');
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(event) {
+                mediaImg.src = event.target.result;
+                mediaBox.style.display = 'block';
+            };
+            reader.readAsDataURL(file);
+        } else {
+            mediaBox.style.display = 'none';
+        }
+    });
+
+    function toggleTheme() {
+        document.body.classList.toggle('light-mode');
+    }
+
+    function prepareCapture() {
+        document.body.classList.add('export-mode');
+        document.getElementById('exit-capture').classList.remove('hidden');
+        document.body.style.background = document.body.classList.contains('light-mode') ? '#ffffff' : '#000000';
+    }
+
+    function exitCapture() {
+        document.body.classList.remove('export-mode');
+        document.getElementById('exit-capture').classList.add('hidden');
+        document.body.style.background = '#15202b';
+    }
+
+    // Default Init
+    function init() {
+        inputs.name.value = "Shivaansh | Shiv Abhishek Shar...";
+        inputs.handle.value = "@Itsabhishex";
+        inputs.text.value = `"If you're a friend of everybody, you're an enemy to yourself"
+~ Mike Tyson
+
+Explanation :- please everyone often forces you to compromise your own values, mask your true personality, and abandon your authenticity.`;
+        inputs.time.value = "8:12 am · 16 Mar 26";
+        inputs.views.value = "1.2M";
+        inputs.retweets.value = "456";
+        inputs.quotes.value = "12";
+        inputs.likes.value = "8,902";
+        inputs.bookmarks.value = "122";
+    }
+    
+    init();
+</script>
+
+</body>
+</html>
